@@ -31,7 +31,7 @@ import {
 } from "./estado.js";
 import { puedeEditarLote, puedeBorrarLote } from "./permisos.js";
 import { poblarSelectSector, poblarSelectBarrio } from "./catalogos.js";
-import { mapa, cargarLotesDesdeFirestore } from "./mapa.js";
+import { mapa, cargarLotesDesdeFirestore, abrirTooltipDeLote } from "./mapa.js";
 import { mostrarEditarLoteDesdeGrilla } from "./vista-lista.js";
 import { registrarVistaDeLote } from "./dashboard.js";
 import { registrarAuditoria } from "./auditoria.js";
@@ -698,5 +698,18 @@ export function abrirLoteDesdeUrlSiCorresponde() {
   if (!feature) return;
   const { lat, lon } = centroideDePoligono(feature.geometry.coordinates[0]);
   mapa.setView([lat, lon], 19);
+
+  // En "modo embed" (insertado en la web de una inmobiliaria, ver
+  // index.html) la ficha completa (hoja inferior, hasta 70% del alto) tapa
+  // casi toda la vista en un iframe chico — reportado en vivo: "no me
+  // aparece en el mapa, solo me despliega el panel de info". Ahí alcanza
+  // con centrar el mapa en el lote y abrir su cartel (mismo que aparece al
+  // pasar el mouse), sin abrir el panel — el caso de uso real es "mostrame
+  // dónde está este lote", no necesariamente todos sus datos.
+  if (document.documentElement.classList.contains("modo-embed")) {
+    abrirTooltipDeLote(feature.id);
+    return;
+  }
+
   mostrarFicha(feature);
 }

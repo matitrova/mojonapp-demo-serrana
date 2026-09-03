@@ -183,6 +183,17 @@ export function anilloAGeometryFirestore(anillo) {
   };
 }
 
+// Abre el cartel (tooltip) de un lote puntual sin tocar la ficha — lo usa
+// "modo embed" (ver ficha.js) para marcar cuál es el lote elegido sobre
+// el mapa sin abrir el panel completo, que en un iframe chico tapa casi
+// toda la vista.
+export function abrirTooltipDeLote(loteId) {
+  if (!capaLotes) return;
+  capaLotes.eachLayer((capa) => {
+    if (capa.feature?.id === loteId) capa.openTooltip();
+  });
+}
+
 function docALoteFeature(doc) {
   const { geometry, ...properties } = doc.data();
   const anillo = geometry.coordinates.map((punto) => [punto.lon, punto.lat]);
