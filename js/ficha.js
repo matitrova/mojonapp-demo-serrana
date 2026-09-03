@@ -684,14 +684,22 @@ document.getElementById("btn-compartir-lote").addEventListener("click", async ()
 });
 
 // Si la app se abrió con "?lote=<id>" (link armado por "Compartir este
-// lote"), abre esa ficha directo apenas hay datos para buscarla — una
-// sola vez, no cada vez que cambia la sesión (login/logout también
-// disparan cargarLotesDesdeFirestore en app.js, que llama a esto de
-// nuevo, y no hay que reabrir el deep link en medio de que alguien esté
-// usando la app).
+// lote"), abre esa ficha directo apenas hay datos para buscarla. Al
+// arrancar, la app dispara DOS cargas de lotes en paralelo — iniciarMapa()
+// (mapa.js) pinta rápido sin esperar la sesión, y onAuthStateChanged
+// (app.js) vuelve a cargar apenas Firebase Auth resuelve, para aplicar el
+// alcance correcto según permisos — y cada una hace su propio fitBounds()
+// sobre TODOS los lotes. Esta función se llama al terminar cualquiera de
+// las dos: si se reaplicara el centrado solo una vez, la carga que
+// terminara después (la carrera de red no es determinística) podía pisar
+// el zoom del lote puntual con su propio fitBounds y dejar el mapa
+// enfocado en el conjunto en vez del lote — reportado en vivo: "ahora lo
+// marca pero no lo enfoca con un zoom". Por eso el centrado se reaplica
+// en cada llamada (gana siempre la carga que terminó última); lo que se
+// hace una sola vez es abrir el cartel/ficha, para no reabrirlo en medio
+// de que alguien ya esté usando la app (login/logout también pasan por
+// acá).
 export function abrirLoteDesdeUrlSiCorresponde() {
-  if (getDeepLinkAbierto()) return;
-  setDeepLinkAbierto(true);
   const idDesdeUrl = new URLSearchParams(location.search).get("lote");
   if (!idDesdeUrl) return;
   const feature = getLotesActuales().find((f) => f.id === idDesdeUrl);
@@ -706,10 +714,20 @@ export function abrirLoteDesdeUrlSiCorresponde() {
   // con centrar el mapa en el lote y abrir su cartel (mismo que aparece al
   // pasar el mouse), sin abrir el panel — el caso de uso real es "mostrame
   // dónde está este lote", no necesariamente todos sus datos.
+  //
+  // A diferencia de la ficha completa (más abajo, una sola vez), el
+  // cartel se reabre en CADA llamada, igual que el centrado: vive en
+  // capaLotes, que cargarLotesDesdeFirestore() reconstruye de cero en
+  // cada una de las dos cargas del arranque (ver comentario arriba). Si
+  // se abriera una sola vez, la carga que reconstruye la capa después de
+  // esa primera apertura se lleva puesto el cartel junto con el resto de
+  // los lotes viejos, y el marcador desaparece sin avisar.
   if (document.documentElement.classList.contains("modo-embed")) {
     abrirTooltipDeLote(feature.id);
     return;
   }
 
+  if (getDeepLinkAbierto()) return;
+  setDeepLinkAbierto(true);
   mostrarFicha(feature);
 }

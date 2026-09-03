@@ -298,9 +298,12 @@ export async function cargarLotesDesdeFirestore() {
 
 // app.js dispara la primera carga real recién después de configurarMapa()
 // (necesita mostrarFicha/contenidoTooltipLote ya inyectados) — ver
-// iniciarMapa() más abajo.
+// iniciarMapa() más abajo. Se devuelve la promesa: app.js la encadena con
+// abrirLoteDesdeUrlSiCorresponde() para reaplicar el centrado del deep
+// link si ESTA carga (la que pinta rápido, sin esperar la sesión) termina
+// después que la de onAuthStateChanged — ver el comentario en esa función.
 export function iniciarMapa() {
-  cargarLotesDesdeFirestore().catch((error) => {
+  return cargarLotesDesdeFirestore().catch((error) => {
     console.error("No se pudieron cargar los lotes desde Firestore:", error);
     // Si la primera carga falla, no dejar el aviso de "Cargando…" pegado
     // para siempre — mejor un mensaje de error concreto que uno que

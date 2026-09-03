@@ -187,7 +187,11 @@ configurarEditorForma({
 });
 
 configurarMapa({ mostrarFicha, contenidoTooltipLote });
-iniciarMapa();
+// Encadenado: reaplica el centrado del deep link ("?lote=") si esta carga
+// (la que pinta rápido, antes de saber si hay sesión) termina después que
+// la de onAuthStateChanged más abajo — ver el comentario en
+// abrirLoteDesdeUrlSiCorresponde (ficha.js).
+iniciarMapa().then(() => abrirLoteDesdeUrlSiCorresponde());
 
 configurarVistaLista({
   db,
