@@ -865,6 +865,19 @@ button:active {
   padding: 24px;
 }
 
+/* El "×" genérico de .btn-cerrar se ancla a top:8px/right:12px de su
+   propio contenedor posicionado — para el resto de las hojas/paneles
+   (que arrancan más abajo en la pantalla) eso cae bien, pero este panel
+   es el único que cubre TODA la pantalla desde arriba (inset:0), así
+   que sin este ajuste el "×" termina en el mismo punto que "Ingresar"/el
+   estado de sesión del header, que se transparenta debajo (el fondo es
+   95% opaco, no 100%) — reportado en vivo, "se superpone". Mismo offset
+   (54px) que ya usa la leyenda de colores del mapa para despejar el
+   header. */
+#panel-navegacion .btn-cerrar {
+  top: 54px;
+}
+
 #brujula-flecha {
   font-size: 5rem;
   line-height: 1;
