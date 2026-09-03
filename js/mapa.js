@@ -287,7 +287,19 @@ export async function cargarLotesDesdeFirestore() {
     // aislado en una esquina, imagen satelital reventada de borrosa.
     // Reproducido de forma consistente en pruebas. 18 alcanza de sobra
     // para encuadrar cualquier cartera real de lotes de un corredor.
-    mapa.fitBounds(capaLotes.getBounds(), { padding: [20, 20], maxZoom: 18 });
+    //
+    // animate: false — la app dispara DOS cargas de lotes en paralelo al
+    // arrancar (ver abrirLoteDesdeUrlSiCorresponde en ficha.js), y cada
+    // una llama a este fitBounds. Si el fitBounds de una carga queda
+    // todavía animando (transición de zoom en curso) cuando la otra
+    // carga llama a mapa.setView() para enfocar un lote puntual
+    // (deep-link "?lote=", o "modo embed"), Leaflet ignora en silencio
+    // el zoom pedido por ese setView — el mapa se queda en el zoom del
+    // fitBounds en vez de enfocar el lote. Reproducido de forma
+    // consistente: con animate:false en AMBAS llamadas (acá y en
+    // ficha.js) cada cambio de vista se aplica de una, sin animación en
+    // curso que pueda pisarse con la siguiente.
+    mapa.fitBounds(capaLotes.getBounds(), { padding: [20, 20], maxZoom: 18, animate: false });
   }
 
   if (habiaCatastroCercano) capaCatastroCercano.addTo(mapa);

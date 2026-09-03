@@ -705,7 +705,10 @@ export function abrirLoteDesdeUrlSiCorresponde() {
   const feature = getLotesActuales().find((f) => f.id === idDesdeUrl);
   if (!feature) return;
   const { lat, lon } = centroideDePoligono(feature.geometry.coordinates[0]);
-  mapa.setView([lat, lon], 19);
+  // animate: false, igual que el fitBounds() de cargarLotesDesdeFirestore
+  // (mapa.js) — ver el comentario ahí: si ese fitBounds queda animando
+  // cuando este setView corre, Leaflet ignora el zoom pedido acá.
+  mapa.setView([lat, lon], 19, { animate: false });
 
   // En "modo embed" (insertado en la web de una inmobiliaria, ver
   // index.html) la ficha completa (hoja inferior, hasta 70% del alto) tapa
