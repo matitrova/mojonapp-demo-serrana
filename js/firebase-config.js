@@ -2,17 +2,21 @@
 // seguridad real la dan las reglas de Firestore/Auth (ver firestore.rules),
 // no ocultar estos valores. Para apuntar la app a otro proyecto, se cambia
 // solo acá.
+//
+// Este deploy es la demo aislada "mojonapp-demo-serrana" — un proyecto
+// Firebase propio, separado del original, para embeber en la landing de
+// Raíz Serrana sin mezclar datos de ejemplo con la cartera real.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCR9w0fwXixk4CZV051-srq9PsTvmp5lGQ",
-  authDomain: "mojonapp.firebaseapp.com",
-  projectId: "mojonapp",
-  storageBucket: "mojonapp.firebasestorage.app",
-  messagingSenderId: "429408050490",
-  appId: "1:429408050490:web:0d977ce145c87264958403"
+  apiKey: "AIzaSyBX8P7hKkUZarGuFdNea6Sl7JtX1f3m9v4",
+  authDomain: "mojonapp-demo-serrana.firebaseapp.com",
+  projectId: "mojonapp-demo-serrana",
+  storageBucket: "mojonapp-demo-serrana.firebasestorage.app",
+  messagingSenderId: "759809397310",
+  appId: "1:759809397310:web:37aab077b48a85c423776f"
 };
 
 const app = initializeApp(firebaseConfig);
